@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Field Guide — Reading a Flip</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  :root{
+    --bg:#14151a; --panel:#1d1f26; --panel2:#24262e; --line:#2e3039;
+    --ink:#ece9e4; --muted:#8d8f98; --gold:#c2703d; --go:#4cae7d; --no:#d9534f;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Archivo',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;padding:24px 16px 56px;max-width:740px;margin:0 auto;}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;}
+  h1{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:5px 0 5px;line-height:1.1;}
+  h1 .g{color:var(--gold);}
+  .lede{font-size:13px;color:var(--muted);max-width:62ch;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px;}
+  .card-title{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .card-title::before{content:"";width:14px;height:2px;background:var(--gold);display:inline-block;}
+  .formula{font-family:var(--mono);font-size:clamp(15px,4.6vw,19px);font-weight:600;text-align:center;padding:16px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;}
+  .formula .b{color:var(--gold);}
+  .twostep{display:grid;gap:10px;margin-top:14px;}
+  .step{display:flex;gap:11px;align-items:flex-start;}
+  .step .n{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold);border:1px solid var(--line);border-radius:7px;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step .t{font-size:13px;color:var(--muted);padding-top:3px;}
+  .step .t b{color:var(--ink);font-weight:600;}
+  .note{font-size:12.5px;color:var(--muted);margin-top:14px;}
+  .note b{color:var(--ink);}
+
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:0;}
+  .row .k{font-size:13px;}
+  .row .k small{display:block;color:var(--muted);font-size:11.5px;font-weight:400;margin-top:2px;line-height:1.4;}
+  .row .v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;}
+  .row.tot{background:var(--panel2);margin:6px -10px;padding:10px;border-radius:9px;border-bottom:0;}
+  .row.tot .k{font-weight:700;}
+  .row.tot.hero .v{color:var(--gold);font-size:14px;}
+  .sect{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:16px 0 2px;}
+
+  .scenarios{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+  @media(max-width:560px){.scenarios{grid-template-columns:1fr;}}
+  .scn{border-radius:12px;padding:15px;border:1px solid var(--line);}
+  .scn.win{border-color:rgba(76,174,125,.45);background:rgba(76,174,125,.07);}
+  .scn.lose{border-color:rgba(217,83,79,.45);background:rgba(217,83,79,.07);}
+  .scn .badge{font-size:10.5px;font-weight:800;letter-spacing:.08em;}
+  .scn.win .badge{color:var(--go);}
+  .scn.lose .badge{color:var(--no);}
+  .scn .price{font-size:12.5px;color:var(--muted);margin:3px 0 11px;}
+  .scn .price b{color:var(--ink);font-family:var(--mono);}
+  .scn .big{font-family:var(--mono);font-size:25px;font-weight:600;}
+  .scn.win .big{color:var(--go);}
+  .scn.lose .big{color:var(--no);}
+  .scn .biglbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px;}
+  .scn .mini{margin-top:11px;display:flex;flex-direction:column;gap:5px;}
+  .scn .mini div{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);}
+  .scn .mini span{font-family:var(--mono);color:var(--ink);}
+
+  .principle{border:1px solid var(--gold);border-radius:14px;padding:20px;margin-top:18px;background:var(--panel);}
+  .principle .big{font-size:18px;font-weight:800;letter-spacing:-.01em;line-height:1.3;color:var(--gold);}
+  .principle p{font-size:13px;color:var(--muted);margin-top:8px;}
+
+  .check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);}
+  .check:last-child{border-bottom:0;}
+  .check .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);margin-top:7px;flex-shrink:0;}
+  .check .t{font-size:13px;color:var(--muted);}
+  .check .t b{color:var(--ink);font-weight:600;}
+
+  .vkey{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+  .vk{font-size:11px;font-family:var(--mono);padding:6px 10px;border-radius:8px;border:1px solid var(--line);}
+  .vk.s{color:var(--go);}.vk.w{color:var(--gold);}.vk.p{color:var(--no);}
+  footer{margin-top:28px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6;}
+
+  @media print{
+    body{background:#fff;color:#16181c;max-width:none;}
+    .card,.principle{border:1px solid #ddd;background:#fff;break-inside:avoid;}
+    .formula,.row.tot{background:#f5f1ec;}
+    .scn.win{background:#f0faf4;}.scn.lose{background:#fdf2f1;}
+    .eyebrow,h1 .g,.card-title::before,.sect{color:#b06a2e;}
+    .principle .big{color:#b06a2e;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">The Acquisition Desk · Field Guide</div>
+  <h1>Reading a Flip, <span class="g">Line by Line</span></h1>
+  <p class="lede">Keep this open next to the Desk. The formula, what every cost line actually is, and a real deal proving the buy price is the only number that matters.</p>
+
+  <div class="card">
+    <div class="card-title">The one rule</div>
+    <div class="formula">MAO = (<span class="b">ARV</span> &times; 70%) &minus; <span class="b">Rehab</span></div>
+    <div class="twostep">
+      <div class="step"><div class="n">1</div><div class="t"><b>ARV &times; 70%</b> = your max all-in. The most you can have in the entire deal — purchase and rehab combined.</div></div>
+      <div class="step"><div class="n">2</div><div class="t"><b>&minus; rehab</b> = your max purchase offer (the MAO). The number you actually offer the seller.</div></div>
+    </div>
+    <p class="note">The 30% you leave behind isn't profit — it's profit <b>plus</b> every cost below. That's why you can't pay the full 70%.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The waterfall — what every line is</div>
+    <div class="sect">Start here</div>
+    <div class="row"><div class="k">ARV<small>What it sells for fixed up. From SOLD comps only — never list prices.</small></div><div class="v">resale value</div></div>
+    <div class="row"><div class="k">Rehab<small>Scope of work + 10% contingency, because rehabs always run over.</small></div><div class="v">your scope</div></div>
+
+    <div class="sect">The buy side — what you tie up</div>
+    <div class="row"><div class="k">Purchase price<small>Your offer. The one lever you control.</small></div><div class="v">your offer</div></div>
+    <div class="row"><div class="k">+ Acquisition / closing<small>Title, escrow, inspections on the way in (~1.5%).</small></div><div class="v">+ cost</div></div>
+    <div class="row"><div class="k">+ Rehab</div><div class="v">+ cost</div></div>
+    <div class="row"><div class="k">+ Holding<small>Taxes, insurance, utilities for every month you own it.</small></div><div class="v">+ cost</div></div>
+    <div class="row"><div class="k">+ Financing<small>Hard money cost: interest + points (lender's upfront fee) + flat fees.</small></div><div class="v">+ cost</div></div>
+    <div class="row tot"><div class="k">= ALL-IN</div><div class="v">total in deal</div></div>
+    <div class="row"><div class="k">&minus; Loan<small>Hard money covers ~90% of purchase + rehab.</small></div><div class="v">lender's money</div></div>
+    <div class="row tot hero"><div class="k">= CASH IN DEAL</div><div class="v">your money</div></div>
+
+    <div class="sect">The sell side — what you walk away with</div>
+    <div class="row"><div class="k">ARV (resale)</div><div class="v">resale value</div></div>
+    <div class="row"><div class="k">&minus; Selling costs<small>Buyer's agent + escrow. List it yourself &rarr; $0 listing side. Your edge.</small></div><div class="v">&minus; cost</div></div>
+    <div class="row tot"><div class="k">= Net proceeds</div><div class="v">cash from sale</div></div>
+
+    <div class="sect">The result</div>
+    <div class="row tot hero"><div class="k">NET PROFIT = Net proceeds &minus; All-in</div><div class="v">the payday</div></div>
+
+    <div class="sect">Read the verdict</div>
+    <div class="vkey">
+      <span class="vk s">STRONG · margin &ge;12% &amp; &ge;$35k</span>
+      <span class="vk w">WORKABLE · margin &ge;8% &amp; &ge;$25k</span>
+      <span class="vk p">PASS · below that</span>
+    </div>
+    <p class="note"><b>Margin</b> = profit ÷ ARV (target 15–20%+). <b>Cash-on-cash</b> = profit ÷ your cash in the deal — return on <i>your</i> money.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">A real deal · 4102 Sierra Redwood Dr</div>
+    <p class="note" style="margin-top:0;">ARV <b class="mono" style="color:var(--gold)">$464,000</b> &nbsp;·&nbsp; Rehab <b class="mono" style="color:var(--ink)">$55,600</b> &nbsp;·&nbsp; MAO <b class="mono" style="color:var(--gold)">$269,200</b></p>
+    <p class="note">Same house, same ARV, same rehab. The only change is what you pay:</p>
+    <div class="scenarios" style="margin-top:14px;">
+      <div class="scn win">
+        <div class="badge">STRONG · BUY AT YOUR MAO</div>
+        <div class="price">Purchase <b>$270,000</b></div>
+        <div class="big">+$96,600</div>
+        <div class="biglbl">Net profit</div>
+        <div class="mini">
+          <div>All-in <span>$351,200</span></div>
+          <div>Cash in deal <span>$58,100</span></div>
+          <div>Margin <span>20.8%</span></div>
+          <div>Cash-on-cash <span>166%</span></div>
+        </div>
+      </div>
+      <div class="scn lose">
+        <div class="badge">PASS · BUY AT THEIR ASK</div>
+        <div class="price">Purchase <b>$367,777</b></div>
+        <div class="big">&minus;$7,600</div>
+        <div class="biglbl">Net loss</div>
+        <div class="mini">
+          <div>All-in <span>$455,400</span></div>
+          <div>Cash in deal <span>$74,300</span></div>
+          <div>Margin <span>&minus;1.6%</span></div>
+          <div>Cash-on-cash <span>&minus;10%</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="note">A <b>$98k swing in purchase price</b> is the difference between making $96,600 and losing $7,600.</p>
+  </div>
+
+  <div class="principle">
+    <div class="big">You don't make money when you sell a flip. You make it when you buy it.</div>
+    <p>The ARV belongs to the market. The rehab belongs to the house. The price is the one thing you control — so the whole job is buying right, then holding your walk-away line. Get the seller to your number, or walk.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Five things that move the number</div>
+    <div class="check"><div class="dot"></div><div class="t"><b>ARV from SOLD comps only.</b> Garbage ARV in = garbage MAO out. Within 0.5 mi, last 6 months.</div></div>
+    <div class="check"><div class="dot"></div><div class="t"><b>Rehab moves your offer dollar-for-dollar.</b> Every $10k of rehab drops your MAO by $10k. Scope it before you lock a price.</div></div>
+    <div class="check"><div class="dot"></div><div class="t"><b>The 30% covers costs first, profit second.</b> Acquisition, holding, financing, selling all come out before you see a dime.</div></div>
+    <div class="check"><div class="dot"></div><div class="t"><b>List it yourself, keep the listing side.</b> ~2.5% of ARV most investors give away stays in your pocket.</div></div>
+    <div class="check"><div class="dot"></div><div class="t"><b>Judge by the worst corner of the stress test.</b> If it still profits at ARV &minus;10% and rehab +30%, it's real.</div></div>
+  </div>
+
+  <footer>
+    The Allen Group · Acquisition Desk companion<br>
+    Estimates only — not verified or guaranteed. Confirm ARV with your own CMA and scope rehab on-site before offering.
+  </footer>
+
+</body>
+</html>
